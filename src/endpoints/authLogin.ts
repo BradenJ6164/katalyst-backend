@@ -84,6 +84,33 @@ export class AuthLogin extends OpenAPIRoute {
             })
         }
 
+        // Check for Existing Session
+        const existingSession = await qb.fetchOne<UserSession>({
+            tableName: 'users_sessions',
+            fields: '*',
+            where: {
+                conditions: [
+                    'user_id = ?1',
+                    'expires_at > ?2',
+                ],
+                params: [
+                    user.results.id,
+                    new Date().getTime()
+                ]
+            },
+        }).execute()
+        if (existingSession.results) {
+            return {
+                success: true,
+                result: {
+                    session: {
+                        token: existingSession.results.token,
+                        expires_at: existingSession.results.expires_at,
+                    }
+                }
+            }
+        }
+
 
         // User found, define expiration date for new session token
         let expiration = new Date();
