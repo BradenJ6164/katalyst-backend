@@ -10,14 +10,14 @@ const app = new Hono();
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
-	docs_url: "/",
+	docs_url: "/docs",
 });
 
 // Register OpenAPI endpoints
-openapi.get("/api/tasks", TaskList);
-openapi.post("/api/tasks", TaskCreate);
-openapi.get("/api/tasks/:taskSlug", TaskFetch);
-openapi.delete("/api/tasks/:taskSlug", TaskDelete);
+// openapi.get("/api/tasks", TaskList);
+// openapi.post("/api/tasks", TaskCreate);
+// openapi.get("/api/tasks/:taskSlug", TaskFetch);
+// openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 
 // Export the Hono app
 export default app;
