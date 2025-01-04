@@ -1,8 +1,9 @@
 import {z} from 'zod'
-import {OpenAPIRoute} from "chanfana";
+import {Ip, OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
 import {User, UserSession} from "../types";
 import {hashPassword} from "../utils/hash";
+import requestIp from "request-ip"
 
 export class AuthLogin extends OpenAPIRoute {
     schema = {
@@ -43,7 +44,7 @@ export class AuthLogin extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             success: z.boolean(),
-                            error: z.string()
+                            errors: z.array(z.string())
                         }),
                     },
                 },
@@ -54,7 +55,6 @@ export class AuthLogin extends OpenAPIRoute {
     async handle(c) {
         // Validate inputs
         const data = await this.getValidatedData<typeof this.schema>()
-
         // Get query builder for D1
         const qb = new D1QB(c.env.DB)
 
@@ -78,7 +78,7 @@ export class AuthLogin extends OpenAPIRoute {
         if (!user.results) {
             return Response.json({
                 success: false,
-                errors: "Unknown user"
+                errors: ["Unknown user"]
             }, {
                 status: 400,
             })

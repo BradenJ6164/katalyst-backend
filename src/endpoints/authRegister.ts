@@ -45,7 +45,7 @@ export class AuthRegister extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             success: z.boolean(),
-                            error: z.string()
+                            errors: z.array(z.string())
                         }),
                     },
                 },
@@ -56,7 +56,7 @@ export class AuthRegister extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             success: z.boolean(),
-                            error: z.string()
+                            errors: z.array(z.string())
                         }),
                     },
                 },
@@ -75,7 +75,7 @@ export class AuthRegister extends OpenAPIRoute {
         if (data.body.registration_key !== c.env.REGISTRATION_KEY) {
             return Response.json({
                 success: false,
-                errors: "Invalid registration key",
+                errors: ["Invalid registration key"],
             }, {
                 status: 401,
             })
@@ -96,7 +96,7 @@ export class AuthRegister extends OpenAPIRoute {
             // Insert failed due to unique constraint on the email column
             return Response.json({
                 success: false,
-                errors: "User with that email already exists"
+                errors: ["User with that email already exists"]
             }, {
                 status: 400,
             })

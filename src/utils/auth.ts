@@ -13,11 +13,10 @@ export function getBearer(request: Request): null | string {
 
 export async function authenticateUser(c: AppContext, next: Next) {
     const token = getBearer(c.req.raw)
-
     if (!token) {
         return Response.json({
             success: false,
-            errors: "No Authorization token received"
+            errors: ["No Authorization token received"]
         }, {
             status: 401,
         })
@@ -44,7 +43,7 @@ export async function authenticateUser(c: AppContext, next: Next) {
     if (!session.results) {
         return Response.json({
             success: false,
-            errors: "Authentication error"
+            errors: ["Authentication error"]
         }, {
             status: 401,
         })
