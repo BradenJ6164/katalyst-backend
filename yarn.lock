@@ -382,6 +382,11 @@ hono@^4.4.7:
   resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.15.tgz#86e9c12a1b8115c96ec8538ca7d7cb8e21e30e4b"
   integrity sha512-OiQwvAOAaI2JrABBH69z5rsctHDzFzIKJge0nYXgtzGJ0KftwLWcBXm1upJC23/omNRtnqM0gjRMbtXshPdqhQ==
 
+ical.js@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ical.js/-/ical.js-2.1.0.tgz#ce064e28fa722eedb32a07a6d967bdeb85a7cbf9"
+  integrity sha512-BOVfrH55xQ6kpS3muGvIXIg2l7p+eoe12/oS7R5yrO3TL/j/bLsR0PR+tYQESFbyTbvGgPHn9zQ6tI4FWyuSaQ==
+
 is-core-module@^2.16.0:
   version "2.16.1"
   resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.16.1.tgz#2a98801a849f43e2add644fbb6bc6229b19a4ef4"
@@ -598,6 +603,11 @@ workerd@1.20241218.0:
     "@cloudflare/workerd-linux-64" "1.20241218.0"
     "@cloudflare/workerd-linux-arm64" "1.20241218.0"
     "@cloudflare/workerd-windows-64" "1.20241218.0"
+
+workers-qb@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/workers-qb/-/workers-qb-1.8.0.tgz#9e439e914a9634c0350d7669ed1812d2063233b7"
+  integrity sha512-dgnBcZIfoIaY3wLS2mg5abyTcAqkORwSqjUjQ0awtb9g6si+PSFx4U2YxKcopPl0zcBX94wZ2RFGGf5ctfx79g==
 
 wrangler@^3.60.3:
   version "3.99.0"

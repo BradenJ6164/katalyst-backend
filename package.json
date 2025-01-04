@@ -1,5 +1,5 @@
 {
-	"name": "cloudflare-workers-openapi",
+	"name": "katalyst-backend",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -11,6 +11,8 @@
 	"dependencies": {
 		"chanfana": "^2.0.2",
 		"hono": "^4.4.7",
+		"ical.js": "^2.1.0",
+		"workers-qb": "^1.8.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
