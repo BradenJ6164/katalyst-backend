@@ -10,6 +10,9 @@ import {authenticateUser} from "./utils/auth";
 import {GetCurrentReservation} from "./endpoints/getCurrentReservation";
 import {AuthVerifyToken} from "./endpoints/authVerifyToken";
 import {AuthLogout} from "./endpoints/authLogout";
+import {GetGuide} from "./endpoints/getGuide";
+import {SetGuide} from "./endpoints/setGuide";
+import {CreateGuide} from "./endpoints/createGuide";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -39,7 +42,7 @@ openapi.registry.registerComponent('securitySchemes', 'bearerAuth', {
 openapi.post('/api/auth/register', AuthRegister);
 openapi.post('/api/auth/login', AuthLogin);
 openapi.get('/api/reservations/getCurrentReservation',GetCurrentReservation)
-
+openapi.get('/api/guides/getGuide',GetGuide)
 
 // 2. Authentication middleware
 openapi.use('/api/*', authenticateUser)
@@ -49,7 +52,8 @@ openapi.use('/api/*', authenticateUser)
 openapi.post('/api/auth/verifyToken', AuthVerifyToken);
 openapi.post('/api/auth/logout', AuthLogout);
 openapi.get("/api/search", GetSearch);
-
+openapi.post('/api/guides/setGuide',SetGuide)
+openapi.post('/api/guides/createGuide',CreateGuide)
 
 // 404 for everything else
 openapi.all("*", () => new Response("Not Found.", {status: 404}));

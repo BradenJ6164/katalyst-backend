@@ -54,8 +54,6 @@ export class AuthLogout extends OpenAPIRoute {
         let token = data.headers.Authorization;
         token = token.replace("Bearer ","");
 
-        console.log(token)
-
         await qb.delete<UserSession>({
             tableName: 'users_sessions',
             where: {

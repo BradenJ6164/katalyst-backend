@@ -15,7 +15,7 @@ export class AuthLogin extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             email: z.string().email(),
-                            password: z.string().min(8).max(16),
+                            password: z.string(),
                         }),
                     },
                 },
@@ -121,7 +121,7 @@ export class AuthLogin extends OpenAPIRoute {
             tableName: 'users_sessions',
             data: {
                 user_id: user.results.id,
-                token: await hashPassword((Math.random() + 1).toString(3), c.env.SALT_TOKEN),
+                token: (await hashPassword((Math.random() + 1).toString(3), c.env.SALT_TOKEN)),
                 expires_at: expiration.getTime()
             },
             returning: '*'

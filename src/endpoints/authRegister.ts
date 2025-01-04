@@ -75,7 +75,7 @@ export class AuthRegister extends OpenAPIRoute {
         if (data.body.registration_key !== c.env.REGISTRATION_KEY) {
             return Response.json({
                 success: false,
-                errors: ["Invalid registration key"],
+                errors: ["Invalid Entitlement ID"],
             }, {
                 status: 401,
             })
