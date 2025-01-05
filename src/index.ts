@@ -13,6 +13,7 @@ import {AuthLogout} from "./endpoints/authLogout";
 import {GetGuide} from "./endpoints/getGuide";
 import {SetGuide} from "./endpoints/setGuide";
 import {CreateGuide} from "./endpoints/createGuide";
+import {DeleteGuide} from "./endpoints/deleteGuide";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -54,6 +55,7 @@ openapi.post('/api/auth/logout', AuthLogout);
 openapi.get("/api/search", GetSearch);
 openapi.post('/api/guides/setGuide',SetGuide)
 openapi.post('/api/guides/createGuide',CreateGuide)
+openapi.post('/api/guides/deleteGuide',DeleteGuide)
 
 // 404 for everything else
 openapi.all("*", () => new Response("Not Found.", {status: 404}));
