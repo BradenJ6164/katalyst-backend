@@ -55,7 +55,7 @@ export class GetCurrentReservation extends OpenAPIRoute {
         const response = await fetch(c.env.ICAL_LINK);
         const body = await response.text();
         // console.log(body);
-        const calendar =new ICAL.Component(ICAL.parse(body));
+        const calendar = new ICAL.Component(ICAL.parse(body));
         const events = calendar.getAllSubcomponents("vevent")
 
         function parseDataToObject(dataString) {
@@ -75,16 +75,20 @@ export class GetCurrentReservation extends OpenAPIRoute {
             return result;
         }
 
-        let reservation: undefined|ReservationData = undefined;
-        events.forEach((event)=>{
-            const dtstart = event.getFirstPropertyValue("dtstart") as Time
-            const dtend = event.getFirstPropertyValue("dtend") as Time
-            const now = Math.floor(Date.now() / 1000)
-            if (now>= dtstart.toUnixTime() && now <= dtend.toUnixTime()) {
+        let reservation: undefined | ReservationData = undefined;
+
+        events.forEach((event) => {
+            let dtstart = event.getFirstPropertyValue("dtstart") as Time
+            let dtend = event.getFirstPropertyValue("dtend") as Time
+            const dtstartUnix = dtstart.toUnixTime() + 60 * 60
+            const dtendUnix = dtend.toUnixTime() + 60 * 60
+
+            const now = Math.floor((new Date()).getTime() / 1000)
+            if (now >= dtstartUnix && now <= dtendUnix) {
 
                 reservation = parseDataToObject(event.getFirstPropertyValue("description")) as ReservationData;
-                reservation["CheckIn"] = dtstart.toUnixTime();
-                reservation["CheckOut"] = dtend.toUnixTime();
+                reservation["CheckIn"] = dtstartUnix
+                reservation["CheckOut"] = dtendUnix
             }
         })
 

@@ -71,7 +71,7 @@ export class GetGuide extends OpenAPIRoute {
                     name: atob(guide.results.name),
                     content: atob(guide.results.content),
                     created_at: guide.results.created_at,
-                    last_save: guide.results.created_at,
+                    last_save: guide.results.last_save,
                 }
             }
         }
