@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="D1 JDBC Data Source" uuid="f67a432d-02f8-4521-bf57-e3927da812e2">
+      <driver-ref>java.sql.Driver</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.isaacmcfadyen.D1Driver</jdbc-driver>
+      <jdbc-url>jdbc:d1://a1a5e8b3-e99e-405e-9a0d-e4a9a12a6b78</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

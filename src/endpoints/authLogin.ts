@@ -1,9 +1,9 @@
 import {z} from 'zod'
-import {Ip, OpenAPIRoute} from "chanfana";
+import {OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
 import {User, UserSession} from "../types";
 import {hashPassword} from "../utils/hash";
-import requestIp from "request-ip"
+import jwt from "@tsndr/cloudflare-worker-jwt"
 
 export class AuthLogin extends OpenAPIRoute {
     schema = {
@@ -111,17 +111,27 @@ export class AuthLogin extends OpenAPIRoute {
             }
         }
 
-
         // User found, define expiration date for new session token
         let expiration = new Date();
         expiration.setDate(expiration.getDate() + 7);
+
+        // Create Token
+        const token = await jwt.sign({
+            sub: "auth",
+            user: user.results.id,
+            email: user.results.email,
+            exp: Math.floor(expiration.getTime()) // Expires: Now + 2h
+        }, c.env.SALT_TOKEN)
+
+        // old token generation
+        // (await hashPassword((Math.random() + 1).toString(3), c.env.SALT_TOKEN))
 
         // Insert session token
         const session = await qb.insert<UserSession>({
             tableName: 'users_sessions',
             data: {
                 user_id: user.results.id,
-                token: (await hashPassword((Math.random() + 1).toString(3), c.env.SALT_TOKEN)),
+                token: btoa(token),
                 expires_at: expiration.getTime()
             },
             returning: '*'
@@ -132,7 +142,7 @@ export class AuthLogin extends OpenAPIRoute {
             success: true,
             result: {
                 session: {
-                    token: session.results.token,
+                    token: token,
                     expires_at: session.results.expires_at,
                 }
             }

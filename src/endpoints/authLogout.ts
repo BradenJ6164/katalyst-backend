@@ -1,9 +1,7 @@
 import {z} from 'zod'
-import {Ip, OpenAPIRoute} from "chanfana";
+import {OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
-import {User, UserSession} from "../types";
-import {hashPassword} from "../utils/hash";
-import requestIp from "request-ip"
+import {UserSession} from "../types";
 
 export class AuthLogout extends OpenAPIRoute {
     schema = {
@@ -52,7 +50,7 @@ export class AuthLogout extends OpenAPIRoute {
         const qb = new D1QB(c.env.DB)
 
         let token = data.headers.Authorization;
-        token = token.replace("Bearer ","");
+        token = token.replace("Bearer ", "");
 
         await qb.delete<UserSession>({
             tableName: 'users_sessions',
@@ -61,7 +59,7 @@ export class AuthLogout extends OpenAPIRoute {
                     'token = ?1',
                 ],
                 params: [
-                    token,
+                    btoa(token),
                 ]
             },
         }).execute()

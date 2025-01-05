@@ -24,3 +24,4 @@ create table if not exists mdx_guides
     last_save INTEGER DEFAULT (strftime('%s', 'now')),
     created_at INTEGER DEFAULT (strftime('%s', 'now'))
 );
+CREATE INDEX IF NOT EXISTS idx_guides_guide_id ON mdx_guides(guide_id)
