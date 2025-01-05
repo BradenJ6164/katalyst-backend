@@ -64,7 +64,8 @@ export class SetGuide extends OpenAPIRoute {
         const updateData =
                 {
                     name:  btoa(data.body.name),
-                    content: btoa(data.body.content)
+                    content: btoa(data.body.content),
+                    last_save: Date.now()/1000
                 }
 
         const updated = await qb
