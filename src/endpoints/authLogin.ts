@@ -49,6 +49,17 @@ export class AuthLogin extends OpenAPIRoute {
                     },
                 },
             },
+            '500': {
+                description: "Error",
+                content: {
+                    'application/json': {
+                        schema: z.object({
+                            success: z.boolean(),
+                            errors: z.array(z.string())
+                        }),
+                    },
+                },
+            },
         },
     };
 
@@ -100,13 +111,22 @@ export class AuthLogin extends OpenAPIRoute {
             },
         }).execute()
         if (existingSession.results) {
+            const userData = await jwt.verify(existingSession.results.token, c.env.SALT_TOKEN)
+            if (!userData) {
+                return Response.json({
+                    success: false,
+                    errors: ["Token verification failed"]
+                }, {
+                    status: 500,
+                })
+            }
             return {
                 success: true,
                 result: {
                     session: {
                         token: existingSession.results.token,
                         expires_at: existingSession.results.expires_at,
-                    }
+                    },
                 }
             }
         }
@@ -119,7 +139,8 @@ export class AuthLogin extends OpenAPIRoute {
         const token = await jwt.sign({
             sub: "auth",
             user: user.results.id,
-            email: user.results.email,
+            email: btoa(user.results.email),
+            name: btoa(user.results.name),
             exp: Math.floor(expiration.getTime()) // Expires: Now + 2h
         }, c.env.SALT_TOKEN)
 
@@ -131,7 +152,7 @@ export class AuthLogin extends OpenAPIRoute {
             tableName: 'users_sessions',
             data: {
                 user_id: user.results.id,
-                token: btoa(token),
+                token: token,
                 expires_at: expiration.getTime()
             },
             returning: '*'
@@ -144,7 +165,7 @@ export class AuthLogin extends OpenAPIRoute {
                 session: {
                     token: token,
                     expires_at: session.results.expires_at,
-                }
+                },
             }
         }
     }

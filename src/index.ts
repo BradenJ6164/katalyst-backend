@@ -14,6 +14,7 @@ import {GetGuide} from "./endpoints/getGuide";
 import {SetGuide} from "./endpoints/setGuide";
 import {CreateGuide} from "./endpoints/createGuide";
 import {DeleteGuide} from "./endpoints/deleteGuide";
+import {SetUser} from "./endpoints/setUser";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>()
@@ -21,29 +22,29 @@ app.use('/api/*', cors())
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
-	schema: {
-		info: {
-			title: "Katalyst Backend",
-			version: '1.0',
-		},
-		security: [
-			{
-				bearerAuth: [],
-			},
-		],
-	},
-	docs_url: "/docs",
+    schema: {
+        info: {
+            title: "Katalyst Backend",
+            version: '1.0',
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+    },
+    docs_url: "/docs",
 })
 openapi.registry.registerComponent('securitySchemes', 'bearerAuth', {
-	type: 'http',
-	scheme: 'bearer',
+    type: 'http',
+    scheme: 'bearer',
 })
 
 // 1. Endpoints that don't require Auth
 openapi.post('/api/auth/register', AuthRegister);
 openapi.post('/api/auth/login', AuthLogin);
-openapi.get('/api/reservations/getCurrentReservation',GetCurrentReservation)
-openapi.get('/api/guides/getGuide',GetGuide)
+openapi.get('/api/reservations/getCurrentReservation', GetCurrentReservation)
+openapi.get('/api/guides/getGuide', GetGuide)
 
 // 2. Authentication middleware
 openapi.use('/api/*', authenticateUser)
@@ -53,10 +54,10 @@ openapi.use('/api/*', authenticateUser)
 openapi.post('/api/auth/verifyToken', AuthVerifyToken);
 openapi.post('/api/auth/logout', AuthLogout);
 openapi.get("/api/search", GetSearch);
-openapi.post('/api/guides/setGuide',SetGuide)
-openapi.post('/api/guides/createGuide',CreateGuide)
-openapi.post('/api/guides/deleteGuide',DeleteGuide)
-
+openapi.post('/api/guides/setGuide', SetGuide)
+openapi.post('/api/guides/createGuide', CreateGuide)
+openapi.post('/api/guides/deleteGuide', DeleteGuide)
+openapi.post('/api/users/setUser', SetUser)
 // 404 for everything else
 openapi.all("*", () => new Response("Not Found.", {status: 404}));
 

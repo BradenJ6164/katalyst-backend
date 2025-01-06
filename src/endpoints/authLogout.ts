@@ -59,7 +59,7 @@ export class AuthLogout extends OpenAPIRoute {
                     'token = ?1',
                 ],
                 params: [
-                    btoa(token),
+                    token,
                 ]
             },
         }).execute()

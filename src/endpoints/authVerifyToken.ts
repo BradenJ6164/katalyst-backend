@@ -1,9 +1,5 @@
 import {z} from 'zod'
-import {Ip, OpenAPIRoute} from "chanfana";
-import {D1QB} from "workers-qb";
-import {User, UserSession} from "../types";
-import {hashPassword} from "../utils/hash";
-import requestIp from "request-ip"
+import {OpenAPIRoute} from "chanfana";
 
 export class AuthVerifyToken extends OpenAPIRoute {
     schema = {
@@ -15,7 +11,14 @@ export class AuthVerifyToken extends OpenAPIRoute {
                 content: {
                     'application/json': {
                         schema: z.object({
-                            success: z.boolean()
+                            success: z.boolean(),
+                            user: z.object({
+                                id: z.number(),
+                                name: z.string(),
+                                email: z.string().email(),
+                                role: z.string(),
+                                avatar: z.string(),
+                            }),
                         }),
                     },
                 },
@@ -46,6 +49,13 @@ export class AuthVerifyToken extends OpenAPIRoute {
         // Returning an object, automatically gets converted into a json response
         return {
             success: true,
+            user: {
+                id: c.get('user_id'),
+                name: c.get('name'),
+                email: c.get('email'),
+                role: c.get('role'),
+                avatar: c.get('avatar'),
+            }
         }
     }
 }

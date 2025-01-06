@@ -1,6 +1,7 @@
-import {AppContext} from "../types";
+import {AppContext, User} from "../types";
 import {Next} from "hono";
 import jwt from "@tsndr/cloudflare-worker-jwt";
+import {D1QB} from "workers-qb";
 
 export function getBearer(request: Request): null | string {
     const authHeader = request.headers.get('Authorization')
@@ -25,7 +26,6 @@ export async function authenticateUser(c: AppContext, next: Next) {
     // jwt verify
     const verifiedToken = await jwt.verify(token, c.env.SALT_TOKEN)
     if (!verifiedToken) {
-        
         return Response.json({
             success: false,
             errors: ["Authentication error"]
@@ -33,8 +33,34 @@ export async function authenticateUser(c: AppContext, next: Next) {
             status: 401,
         })
     }
+    const qb = new D1QB(c.env.DB)
+    const userResult = await qb.fetchOne<User>({
+        tableName: 'users',
+        fields: '*',
+        where: {
+            conditions: [
+                'id = ?1',
+            ],
+            params: [
+                verifiedToken.payload.user
+            ]
+        },
+    }).execute()
 
-
+    if (userResult) {
+        c.set('user_id', userResult.results.id)
+        c.set('email', (userResult.results.email))
+        c.set('name', (userResult.results.name))
+        c.set('avatar', (userResult.results.avatar))
+        c.set('role', userResult.results.role)
+    } else {
+        return Response.json({
+            success: false,
+            errors: ["User destroyed"]
+        }, {
+            status: 500,
+        })
+    }
     // Get query builder for D1
     // const qb = new D1QB(c.env.DB)
     //
@@ -64,7 +90,6 @@ export async function authenticateUser(c: AppContext, next: Next) {
 
 
     // This will be accessible from the endpoints as c.get('user_id')
-    c.set('user_id', verifiedToken.payload.user)
 
     await next()
 }
