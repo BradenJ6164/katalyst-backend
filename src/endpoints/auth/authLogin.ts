@@ -2,8 +2,8 @@ import {z} from 'zod'
 import {OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
 import {User, UserSession} from "../types";
-import {hashPassword} from "../utils/hash";
 import jwt from "@tsndr/cloudflare-worker-jwt"
+import {hashPassword} from "../../utils/hash";
 
 export class AuthLogin extends OpenAPIRoute {
     schema = {

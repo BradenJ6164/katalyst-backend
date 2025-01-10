@@ -1,19 +1,21 @@
-import {undefined, z} from "zod";
+import {z} from "zod";
 import {OpenAPIRoute} from "chanfana";
-import {AppContext, UserSession} from "../types";
+import {AppContext} from "../types";
 import {D1QB} from "workers-qb";
+
 //cc3e407ff691f00fc03d977f97a94c62033e4db2aba2f284da7df3b9d994222c
-export class CreateGuide extends OpenAPIRoute {
+export class SetGuide extends OpenAPIRoute {
     schema = {
         tags: ["Guide"],
-        summary: "Creates a new guide",
+        summary: "Sets a guide's content by ID",
         request: {
             body: {
                 content: {
                     'application/json': {
                         schema: z.object({
-                            name: z.string(),
-                            content: z.string(),
+                            guide_id: z.string(),
+                            name: z.string().optional(),
+                            content: z.string().optional(),
                         }),
                     },
                 },
@@ -27,7 +29,7 @@ export class CreateGuide extends OpenAPIRoute {
                         schema: z.object({
                             success: z.boolean(),
                             result: z.object({
-                                guide_id: z.number(),
+                                id: z.string(),
                                 name: z.string(),
                                 content: z.string(),
                                 created_at: z.number().int(),
@@ -60,43 +62,37 @@ export class CreateGuide extends OpenAPIRoute {
         const qb = new D1QB(c.env.DB)
 
 
+        const updateData =
+            {
+                name: btoa(data.body.name),
+                content: btoa(data.body.content),
+                last_save: Date.now() / 1000
+            }
 
-
-        const inserted = await qb
-            .insert({
+        const updated = await qb
+            .update({
                 tableName: 'mdx_guides',
-                data: {
-                    name:  btoa(data.body.name),
-                    content: btoa(data.body.content)
+                data: updateData,
+                where: {
+                    conditions: 'guide_id = ?1',
+                    params: [data.body.guide_id],
                 },
             })
             .execute()
+        if (updated.success) {
+
+            if (updated.changes && updated.changes > 0) {
+                return {success: true};
+            } else {
+                return Response.json({
+                    success: false,
+                    errors: ["Guide not found"]
+                }, {
+                    status: 400,
+                })
+            }
 
 
-        if (inserted.success) {
-            const guide = await qb.fetchOne<{}>({
-                tableName: 'mdx_guides',
-                fields: '*',
-                where: {
-                    conditions: [
-                        'guide_id = ?1',
-                    ],
-                    params: [
-                        inserted.last_row_id
-                    ]
-                },
-            }).execute()
-
-            return {
-                success: true,
-                result: {
-                    guide_id: guide.results.guide_id,
-                    name: atob(guide.results.name),
-                    content: atob(guide.results.content),
-                    created_at: guide.results.created_at,
-                    last_save: guide.results.last_save,
-                }
-            };
         } else {
             return Response.json({
                 success: false,
@@ -105,9 +101,6 @@ export class CreateGuide extends OpenAPIRoute {
                 status: 400,
             })
         }
-
-
-
 
 
     }

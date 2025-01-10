@@ -14,6 +14,7 @@ export class AuthVerifyToken extends OpenAPIRoute {
                             success: z.boolean(),
                             user: z.object({
                                 id: z.number(),
+                                joined_properties: z.string().array(),
                                 name: z.string(),
                                 email: z.string().email(),
                                 role: z.string(),
@@ -51,6 +52,8 @@ export class AuthVerifyToken extends OpenAPIRoute {
             success: true,
             user: {
                 id: c.get('user_id'),
+                joined_properties: c.get('joined_properties'),
+                subscribed_property: c.get('subscribed_property'),
                 name: c.get('name'),
                 email: c.get('email'),
                 role: c.get('role'),

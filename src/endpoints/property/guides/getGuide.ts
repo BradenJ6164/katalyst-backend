@@ -1,6 +1,6 @@
 import {z} from "zod";
 import {OpenAPIRoute} from "chanfana";
-import {AppContext, UserSession} from "../types";
+import {AppContext} from "../types";
 import {D1QB} from "workers-qb";
 
 export class GetGuide extends OpenAPIRoute {
@@ -9,7 +9,7 @@ export class GetGuide extends OpenAPIRoute {
         summary: "Gets a guide by ID",
         request: {
             query: z.object({
-                id: z.number(),
+                id: z.string(),
             })
         },
         responses: {
@@ -20,7 +20,7 @@ export class GetGuide extends OpenAPIRoute {
                         schema: z.object({
                             success: z.boolean(),
                             result: z.object({
-                                guide_id: z.number(),
+                                guide_id: z.string(),
                                 name: z.string(),
                                 content: z.string(),
                                 created_at: z.number().int(),
@@ -49,7 +49,6 @@ export class GetGuide extends OpenAPIRoute {
         const qb = new D1QB(c.env.DB)
 
 
-
         const guide = await qb.fetchOne<{}>({
             tableName: 'mdx_guides',
             fields: '*',
@@ -58,7 +57,7 @@ export class GetGuide extends OpenAPIRoute {
                     'guide_id = ?1',
                 ],
                 params: [
-                   data.query.id
+                    data.query.id
                 ]
             },
         }).execute()

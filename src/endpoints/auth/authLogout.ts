@@ -1,24 +1,16 @@
 import {z} from 'zod'
-import {Ip, OpenAPIRoute} from "chanfana";
+import {OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
-import {User, UserSession} from "../types";
-import {hashPassword} from "../utils/hash";
-import requestIp from "request-ip"
+import {UserSession} from "../types";
 
-export class DeleteGuide extends OpenAPIRoute {
+export class AuthLogout extends OpenAPIRoute {
     schema = {
-        tags: ['Guide'],
-        summary: 'Deletes a guide by id',
+        tags: ['Auth'],
+        summary: 'Logout user',
         request: {
-            body: {
-                content: {
-                    'application/json': {
-                        schema: z.object({
-                            guide_id: z.number(),
-                        }),
-                    },
-                },
-            },
+            headers: z.object({
+                Authorization: z.string()
+            })
         },
         responses: {
             '200': {
@@ -57,39 +49,25 @@ export class DeleteGuide extends OpenAPIRoute {
         // Get query builder for D1
         const qb = new D1QB(c.env.DB)
 
+        let token = data.headers.Authorization;
+        token = token.replace("Bearer ", "");
 
-        const result = await qb.delete<{}>({
-            tableName: 'mdx_guides',
+        let result = await qb.delete<UserSession>({
+            tableName: 'users_sessions',
             where: {
                 conditions: [
-                    'guide_id = ?1',
+                    'token = ?1',
                 ],
                 params: [
-                    data.body.guide_id,
+                    token,
                 ]
             },
         }).execute()
-        if (result.success) {
-            if (result.changes && result.changes > 0) {
-                return {
-                    success: true,
-                }
-            } else {
-                return Response.json({
-                    success: false,
-                    errors: ["No guide found"]
-                }, {
-                    status: 400,
-                })
-            }
-        }
-        return Response.json({
-            success: false,
-            errors: ["Database error"]
-        }, {
-            status: 400,
-        })
+        console.log(result)
 
+        return {
+            success: true,
+        }
 
 
     }

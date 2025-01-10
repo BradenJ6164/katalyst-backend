@@ -1,8 +1,7 @@
 import {z} from 'zod'
 import {OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
-import {User, UserSession} from "../types";
-import {hashPassword} from "../utils/hash";
+import {hashPassword, uuidv4} from "../../utils/hash";
 
 export class AuthRegister extends OpenAPIRoute {
     schema = {
@@ -87,6 +86,8 @@ export class AuthRegister extends OpenAPIRoute {
             await qb.insert<{ email: string, name: string, }>({
                 tableName: 'users',
                 data: {
+                    id: uuidv4(),
+                    joined_properties: btoa(JSON.stringify({})),
                     email: data.body.email,
                     name: data.body.name,
                     password: await hashPassword(data.body.password, c.env.SALT_TOKEN),

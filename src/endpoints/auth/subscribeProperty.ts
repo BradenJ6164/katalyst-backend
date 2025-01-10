@@ -3,20 +3,17 @@ import {OpenAPIRoute} from "chanfana";
 import {AppContext, User} from "../types";
 import {D1QB} from "workers-qb";
 
-export class SetUser extends OpenAPIRoute {
+export class SubscribeProperty extends OpenAPIRoute {
     schema = {
         tags: ["User"],
-        summary: "Sets a user's information by ID",
+        summary: "Subscribes current user to a property",
         request: {
             body: {
                 content: {
                     'application/json': {
                         schema: z.object({
-                            id: z.number(),
-                            name: z.string().optional(),
-                            email: z.string().optional(),
-                            role: z.string().optional(),
-                            avatar: z.string().optional(),
+                            id: z.string(),
+                            property_id: z.string(),
                         }),
                     },
                 },
@@ -109,12 +106,10 @@ export class SetUser extends OpenAPIRoute {
         }
 
         // safety to prevent password change
-        delete data.body.password
+
 
         const updateData = {
-            name: (data.body.name),
-            email: (data.body.email),
-            avatar: (data.body.avatar),
+            subscribed_property: data.body.property_id
         }
 
         const updated = await qb

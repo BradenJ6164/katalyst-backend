@@ -34,6 +34,29 @@ export async function authenticateUser(c: AppContext, next: Next) {
         })
     }
     const qb = new D1QB(c.env.DB)
+
+    const sessionResult = await qb.fetchOne<User>({
+        tableName: "users_sessions",
+        fields: 'token',
+        where: {
+            conditions: [
+                'token = ?1',
+            ],
+            params: [
+                token
+            ]
+        },
+    }).execute()
+    if (!sessionResult.results) {
+        return Response.json({
+            success: false,
+            errors: ["Authentication error"]
+        }, {
+            status: 401,
+        })
+    }
+
+
     const userResult = await qb.fetchOne<User>({
         tableName: 'users',
         fields: '*',
@@ -49,10 +72,13 @@ export async function authenticateUser(c: AppContext, next: Next) {
 
     if (userResult) {
         c.set('user_id', userResult.results.id)
+        c.set('joined_properties', JSON.parse(atob(userResult.results.joined_properties) as string) as string[])
         c.set('email', (userResult.results.email))
         c.set('name', (userResult.results.name))
         c.set('avatar', (userResult.results.avatar))
         c.set('role', userResult.results.role)
+        c.set('subscribed_property', userResult.results.subscribed_property)
+
     } else {
         return Response.json({
             success: false,

@@ -1,16 +1,21 @@
 import {z} from 'zod'
 import {OpenAPIRoute} from "chanfana";
 import {D1QB} from "workers-qb";
-import {UserSession} from "../types";
 
-export class AuthLogout extends OpenAPIRoute {
+export class DeleteGuide extends OpenAPIRoute {
     schema = {
-        tags: ['Auth'],
-        summary: 'Logout user',
+        tags: ['Guide'],
+        summary: 'Deletes a guide by id',
         request: {
-            headers: z.object({
-                Authorization: z.string()
-            })
+            body: {
+                content: {
+                    'application/json': {
+                        schema: z.object({
+                            guide_id: z.string(),
+                        }),
+                    },
+                },
+            },
         },
         responses: {
             '200': {
@@ -19,12 +24,6 @@ export class AuthLogout extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             success: z.boolean(),
-                            result: z.object({
-                                session: z.object({
-                                    token: z.string(),
-                                    expires_at: z.number().int()
-                                })
-                            })
                         }),
                     },
                 },
@@ -49,24 +48,38 @@ export class AuthLogout extends OpenAPIRoute {
         // Get query builder for D1
         const qb = new D1QB(c.env.DB)
 
-        let token = data.headers.Authorization;
-        token = token.replace("Bearer ", "");
 
-        await qb.delete<UserSession>({
-            tableName: 'users_sessions',
+        const result = await qb.delete<{}>({
+            tableName: 'mdx_guides',
             where: {
                 conditions: [
-                    'token = ?1',
+                    'guide_id = ?1',
                 ],
                 params: [
-                    token,
+                    data.body.guide_id,
                 ]
             },
         }).execute()
-
-        return {
-            success: true,
+        if (result.success) {
+            if (result.changes && result.changes > 0) {
+                return {
+                    success: true,
+                }
+            } else {
+                return Response.json({
+                    success: false,
+                    errors: ["No guide found"]
+                }, {
+                    status: 400,
+                })
+            }
         }
+        return Response.json({
+            success: false,
+            errors: ["Database error"]
+        }, {
+            status: 400,
+        })
 
 
     }

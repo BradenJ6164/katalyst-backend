@@ -20,10 +20,12 @@ export type Env = {
 
 export type Vars = {
     user_id?: number
+    joined_properties?: string[];
     name?: string
     email?: string
     role?: string
     avatar?: string
+    subscribed_property?: string;
 }
 
 export type AppContext = Context<{ Bindings: Env, Variables: Vars }>
@@ -35,6 +37,8 @@ export type User = {
     name: string
     role: string
     avatar: string
+    joined_properties: string[];
+    subscribed_property: string;
 }
 
 export type UserSession = {
@@ -42,4 +46,12 @@ export type UserSession = {
     user_id: number
     token: string
     expires_at: string
+}
+
+export type Property = {
+    property_id: string,
+    name: string,
+    address: string,
+    description: string,
+    owner: string,
 }
